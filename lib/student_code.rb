@@ -1,3 +1,4 @@
+# rubocop:disable all
 puts "Hello Student Code!"
 puts  "line 2"
  
@@ -12,3 +13,4 @@ class Wonderful
 end
 
  Wonderful.new(12)
+# rubocop:enable all

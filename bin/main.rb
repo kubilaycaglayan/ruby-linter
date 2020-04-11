@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require_relative './../lib/check_errors.rb'
 
-path = './student_code.rb'
+path = '../lib/student_code.rb'
 student_code = CheckErrors.new(path)
 
 student_code.scan_all_lines

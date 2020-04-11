@@ -14,8 +14,6 @@ class IndexCode < ReadFile
 
   def scan_line(line, index)
     scn = StringScanner.new(line)
-    # p "LINE: #{index}"
-    # unit = 0
     until scn.eos?
       matched = false
       @match_units.size.times do |i|
@@ -23,7 +21,6 @@ class IndexCode < ReadFile
         unless value.nil?
           add_all_units(value, index, i)
           matched = true
-          #  unit += 1
         end
         break if matched
       end
@@ -36,32 +33,15 @@ class IndexCode < ReadFile
     end
   end
 
-  def nth_line(nth)
-    read_by_lines
-    @read_by_lines[nth]
-  end
-
-  def nth_line_show(nth)
-    read_by_lines
-    @read_by_lines[nth]
-  end
-
   def match_units
     @match_units = {
-      a_word: /[a-zA-Z]+(\d+)*/,
-      a_number: /\d+/,
-      a_doublequote: /\"/,
-      a_singlequote: /\'/,
-      a_newline: /\n/,
-      a_space: / +/,
-      a_sign: /[!\?\.\+\-\*_@=]/,
-      open_paranthese: /\(/,
-      close_paranthese: /\)/,
-      a_comma: /,/,
-      open_square: /\[/,
-      close_square: /\]/,
-      open_curly: /\{/,
-      close_curly: /\}/,
+      a_word: /[a-zA-Z]+(\d+)*/, a_number: /\d+/,
+      a_doublequote: /\"/, a_singlequote: /\'/,
+      a_newline: /\n/, a_space: / +/,
+      a_sign: /[!\?\.\+\-\*_@=]/, open_paranthese: /\(/,
+      close_paranthese: /\)/, a_comma: /,/,
+      open_square: /\[/, close_square: /\]/,
+      open_curly: /\{/, close_curly: /\}/,
       other: /.{1}/
     }
     @keys_match_units = @match_units.each_key.to_a
@@ -185,6 +165,7 @@ class IndexCode < ReadFile
     calculate_match_units
     calculate_special_word
     calculate_line_order
+    create_hash_index_all_units
   end
 
   def indentation?(unit, value)

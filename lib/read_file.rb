@@ -1,5 +1,3 @@
-puts 'Hello! read_file.rb'
-
 class ReadFile
   attr_accessor :line_orders
   def initialize(path)
