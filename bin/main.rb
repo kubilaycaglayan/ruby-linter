@@ -25,13 +25,14 @@ path = '../lib/student_code.rb'
 require 'strscan'
 
 class ReadLines < ReadFile
-  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors
+  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units
   def initialize(path)
     super
     match_units
     special_words
     line_order
     error_storage
+    create_all_units
   end
 
   def nth_line(nth)
@@ -52,7 +53,7 @@ class ReadLines < ReadFile
       a_singlequote: /\'/,
       a_newline: /\n/,
       a_space: / +/,
-      a_sign: /[!\?\.\+\-\*]/,
+      a_sign: /[!\?\.\+\-\*_@=]/,
       open_paranthese: /\(/,
       close_paranthese: /\)/,
       a_comma: /,/,
@@ -62,6 +63,15 @@ class ReadLines < ReadFile
     @count_match_units = {}
     @match_units.each_key do |key|
       @count_match_units[key] = 0
+    end
+  end
+
+  def calculate_match_units
+    @all_units.each do |key, value|
+      @all_units[key].size.times do |i|
+        match_type = value[i][1]
+        @count_match_units[@keys_match_units[match_type]] += 1
+      end
     end
   end
 
@@ -90,6 +100,15 @@ class ReadLines < ReadFile
     end
   end
 
+  def calculate_special_word()
+    @all_units.each do |key, value|
+      @all_units[key].size.times do |i|
+        word = value[i][0]
+        increase_special_word(word) if special_word?(word)
+      end
+    end
+  end
+
   def line_order
     @line_orders = {}
     count_lines.times do |line|
@@ -109,7 +128,16 @@ class ReadLines < ReadFile
     word == 'end' ? decrease_line_order(line) : increase_line_order(line)
   end
 
-  def calculate_line_order(line)
+  def calculate_line_order()
+    @all_units.each do |key, value|
+      @all_units[key].size.times do |i|
+        word = value[i][0]
+        change_line_order(word, key) if special_word?(word)
+      end
+    end
+  end
+
+  def calculate_indentation_order(line)
     @line_orders.each.reduce(0) do |sum, key_value|
       return sum if key_value[0] == line + 1
 
@@ -133,11 +161,22 @@ class ReadLines < ReadFile
   end
 
   def indentation_error?(value, line)
-    true unless value.size == calculate_line_order(line)
+    true unless value.size == calculate_indentation_order(line)
   end
 
   def record_indentation_error(line)
     @errors[line] << 'Indentation Error'
+  end
+
+  def create_all_units
+    @all_units = {}
+    count_lines.times do |i|
+      @all_units[i] = []
+    end
+  end
+
+  def add_all_units(value, line, mathc_type)
+    @all_units[line] << [value, mathc_type]
   end
 
   def scan_line_show(line, index)
@@ -149,15 +188,15 @@ class ReadLines < ReadFile
       @match_units.size.times do |i|
         value = scn.scan(@match_units[@keys_match_units[i]])
         unless value.nil?
-          # p "UNIT: key: #{@keys_match_units[i]}   :  #{value}"
-          @count_match_units[@keys_match_units[i]] += 1
-          increase_special_word(value) if special_word?(value)
-          change_line_order(value, index) if special_word?(value)
-          if indentation?(unit, value)
-            record_indentation_error(index) if indentation_error?(value, index)
-          end
+          add_all_units(value, index, i)
+          #  # p "UNIT: key: #{@keys_match_units[i]}   :  #{value}"
+
+          #  change_line_order(value, index) if special_word?(value)
+          #  if indentation?(unit, value)
+          #    record_indentation_error(index) if indentation_error?(value, index)
+          #  end
           matched = true
-          unit += 1
+          #  unit += 1
         end
         break if matched
       end
@@ -180,3 +219,5 @@ puts '---'
 puts '----'
 student_code.scan_all_lines
 p student_code.errors
+student_code.calculate_line_order
+p student_code.line_orders
