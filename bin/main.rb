@@ -25,7 +25,7 @@ path = '../lib/student_code.rb'
 require 'strscan'
 
 class ReadLines < ReadFile
-  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units
+  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units, :index_all_units
   def initialize(path)
     super
     match_units
@@ -47,7 +47,7 @@ class ReadLines < ReadFile
 
   def match_units
     @match_units = {
-      a_word: /[a-zA-Z]+\d+*/,
+      a_word: /[a-zA-Z]+(\d+)*/,
       a_number: /\d+/,
       a_doublequote: /\"/,
       a_singlequote: /\'/,
@@ -57,6 +57,10 @@ class ReadLines < ReadFile
       open_paranthese: /\(/,
       close_paranthese: /\)/,
       a_comma: /,/,
+      open_square: /\[/,
+      close_square: /\]/,
+      open_curly: /\{/,
+      close_curly: /\}/,
       other: /.{1}/
     }
     @keys_match_units = @match_units.each_key.to_a
@@ -117,7 +121,7 @@ class ReadLines < ReadFile
   end
 
   def increase_line_order(line)
-    @line_orders[line] += 2
+    @line_orders[line + 1] += 2
   end
 
   def decrease_line_order(line)
@@ -138,11 +142,12 @@ class ReadLines < ReadFile
   end
 
   def calculate_indentation_order(line)
-    @line_orders.each.reduce(0) do |sum, key_value|
+    result = @line_orders.each.reduce(0) do |sum, key_value|
       return sum if key_value[0] == line + 1
 
       sum + key_value[1]
     end
+    result
   end
 
   def error_storage
@@ -175,26 +180,48 @@ class ReadLines < ReadFile
     end
   end
 
-  def add_all_units(value, line, mathc_type)
-    @all_units[line] << [value, mathc_type]
+  def add_all_units(value, line, match_type)
+    @all_units[line] << [value, match_type]
   end
 
-  def scan_line_show(line, index)
+  def create_hash_index_all_units
+    # { "word" => [[2.line,3.unit], [4.line,1.unit]] }
+    @index_all_units = {}
+    @all_units.each do |line, value_match_type|
+      value_match_type.each_with_index do |unit, round|
+        @index_all_units[unit[0]] ||= []
+        @index_all_units[unit[0]] << [line, round]
+      end
+    end
+  end
+
+  def calculate
+    calculate_match_units
+    calculate_special_word
+    calculate_line_order
+  end
+
+  def check_for_errors
+    @all_units.each do |line, value|
+      @all_units[line].size.times do |i|
+        word = value[i][0]
+        if indentation?(i, word)
+          record_indentation_error(line) if indentation_error?(word, line)
+        end
+      end
+    end
+  end
+
+  def scan_line(line, index)
     scn = StringScanner.new(line)
     # p "LINE: #{index}"
-    unit = 0
+    # unit = 0
     until scn.eos?
       matched = false
       @match_units.size.times do |i|
         value = scn.scan(@match_units[@keys_match_units[i]])
         unless value.nil?
           add_all_units(value, index, i)
-          #  # p "UNIT: key: #{@keys_match_units[i]}   :  #{value}"
-
-          #  change_line_order(value, index) if special_word?(value)
-          #  if indentation?(unit, value)
-          #    record_indentation_error(index) if indentation_error?(value, index)
-          #  end
           matched = true
           #  unit += 1
         end
@@ -205,19 +232,48 @@ class ReadLines < ReadFile
 
   def scan_all_lines
     @read_by_lines.each_with_index do |line, index|
-      scan_line_show(line, index)
+      scan_line(line, index)
     end
+  end
+
+  def paranthese_check
+    if @count_match_units[:open_paranthese] < @count_match_units[:close_paranthese]
+      'Open paranthese expected.'
+    elsif @count_match_units[:open_paranthese] > @count_match_units[:close_paranthese]
+      'Closing paranthese expected.'
+    end
+  end
+
+  def square_check
+    if @count_match_units[:open_square] < @count_match_units[:close_square]
+      'Open square expected.'
+    elsif @count_match_units[:open_square] > @count_match_units[:close_square]
+      'Closing square expected.'
+    end
+  end
+
+  def curly_check
+    if @count_match_units[:open_curly] < @count_match_units[:close_curly]
+      'Open curly expected.'
+    elsif @count_match_units[:open_curly] > @count_match_units[:close_curly]
+      'Closing curly expected.'
+    end
+  end
+
+  def first_appearing(unit)
+    @index_all_units[unit].first
+  end
+
+  def last_appearing(unit)
+    @index_all_units[unit].last
   end
 end
 
 student_code = ReadLines.new(path)
-puts student_code
-puts '---'
-# student_code.count_lines.times do |i|
-#  p student_code.nth_line(i)
-# end
-puts '----'
+
 student_code.scan_all_lines
-p student_code.errors
-student_code.calculate_line_order
-p student_code.line_orders
+student_code.calculate
+student_code.check_for_errors
+p student_code.count_match_units
+student_code.create_hash_index_all_units
+p student_code.last_appearing(' ')
