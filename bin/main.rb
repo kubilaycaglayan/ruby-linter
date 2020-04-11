@@ -25,12 +25,13 @@ path = '../lib/student_code.rb'
 require 'strscan'
 
 class ReadLines < ReadFile
-  attr_accessor :count_match_units, :special_w_count, :line_orders
+  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors
   def initialize(path)
     super
     match_units
     special_words
     line_order
+    error_storage
   end
 
   def nth_line(nth)
@@ -40,7 +41,6 @@ class ReadLines < ReadFile
 
   def nth_line_show(nth)
     read_by_lines
-    p @read_by_lines[nth]
     @read_by_lines[nth]
   end
 
@@ -95,7 +95,6 @@ class ReadLines < ReadFile
     count_lines.times do |line|
       @line_orders[line] = 0
     end
-    puts 'LINE ORDER METHOD CALLED'
   end
 
   def increase_line_order(line)
@@ -107,45 +106,61 @@ class ReadLines < ReadFile
   end
 
   def change_line_order(word, line)
-    p "WORD: #{word} : LINE #{line}"
-    p word == 'end' ? decrease_line_order(line) : increase_line_order(line)
+    word == 'end' ? decrease_line_order(line) : increase_line_order(line)
   end
 
   def calculate_line_order(line)
     @line_orders.each.reduce(0) do |sum, key_value|
       return sum if key_value[0] == line + 1
 
-      sum += key_value[1]
+      sum + key_value[1]
     end
+  end
+
+  def error_storage
+    @errors = {}
+    count_lines.times do |i|
+      @errors[i] = []
+    end
+  end
+
+  def indentation?(unit, value)
+    if unit.zero? && value.match(/ +/)
+      true
+    else
+      false
+    end
+  end
+
+  def indentation_error?(value, line)
+    true unless value.size == calculate_line_order(line)
+  end
+
+  def record_indentation_error(line)
+    @errors[line] << 'Indentation Error'
   end
 
   def scan_line_show(line, index)
     scn = StringScanner.new(line)
-    p "LINE: #{index}"
+    # p "LINE: #{index}"
+    unit = 0
     until scn.eos?
       matched = false
-      unit = 0
       @match_units.size.times do |i|
         value = scn.scan(@match_units[@keys_match_units[i]])
         unless value.nil?
-          p "UNIT: key: #{@keys_match_units[i]}   :  #{value}"
+          # p "UNIT: key: #{@keys_match_units[i]}   :  #{value}"
           @count_match_units[@keys_match_units[i]] += 1
           increase_special_word(value) if special_word?(value)
           change_line_order(value, index) if special_word?(value)
+          if indentation?(unit, value)
+            record_indentation_error(index) if indentation_error?(value, index)
+          end
           matched = true
           unit += 1
         end
         break if matched
       end
-
-    end
-  end
-
-  def indendation?(unit, value)
-    if unit.zero? && value.match(/ +/)
-      true
-    else
-      false
     end
   end
 
@@ -163,6 +178,5 @@ puts '---'
 #  p student_code.nth_line(i)
 # end
 puts '----'
-p student_code.scan_all_lines
-p student_code.line_orders
-p student_code.special_w_count
+student_code.scan_all_lines
+p student_code.errors
