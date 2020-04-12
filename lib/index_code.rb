@@ -1,15 +1,14 @@
 require_relative 'read_file.rb'
 require 'strscan'
 
+# rubocop:disable Metrics/ClassLength
 class IndexCode < ReadFile
   attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units, :index_all_units
   def initialize(path)
     super
-    match_units
-    special_words
-    line_order
-    error_storage
-    create_all_units
+    create_hashes
+    scan_all_lines
+    calculate
   end
 
   def scan_line(line, index)
@@ -33,7 +32,21 @@ class IndexCode < ReadFile
     end
   end
 
-  def match_units
+  def create_hashes
+    create_match_units_hash
+    create_special_words_hash
+    create_line_order_hash
+    create_all_units_hash
+  end
+
+  def calculate
+    create_index_all_units_hash
+    calculate_match_units
+    calculate_special_word
+    calculate_line_order
+  end
+
+  def create_match_units_hash
     @match_units = {
       a_word: /[a-zA-Z]+(\d+)*/, a_number: /\d+/,
       a_doublequote: /\"/, a_singlequote: /\'/,
@@ -60,7 +73,7 @@ class IndexCode < ReadFile
     end
   end
 
-  def special_words
+  def create_special_words_hash
     @special_words = {
       method: 'def',
       classs: 'class',
@@ -94,7 +107,7 @@ class IndexCode < ReadFile
     end
   end
 
-  def line_order
+  def create_line_order_hash
     @line_orders = {}
     count_lines.times do |line|
       @line_orders[line] = 0
@@ -131,7 +144,7 @@ class IndexCode < ReadFile
     result
   end
 
-  def create_all_units
+  def create_all_units_hash
     @all_units = {}
     count_lines.times do |i|
       @all_units[i] = []
@@ -142,7 +155,7 @@ class IndexCode < ReadFile
     @all_units[line] << [value, match_type]
   end
 
-  def create_hash_index_all_units
+  def create_index_all_units_hash
     # { "word" => [[2.line,3.unit], [4.line,1.unit]] }
     @index_all_units = {}
     @all_units.each do |line, value_match_type|
@@ -161,13 +174,6 @@ class IndexCode < ReadFile
     @index_all_units[unit].last
   end
 
-  def calculate
-    calculate_match_units
-    calculate_special_word
-    calculate_line_order
-    create_hash_index_all_units
-  end
-
   def indentation?(unit, value)
     if unit.zero? && value.match(/ +/)
       true
@@ -176,3 +182,4 @@ class IndexCode < ReadFile
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

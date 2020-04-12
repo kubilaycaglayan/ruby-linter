@@ -1,7 +1,13 @@
 require_relative 'index_code.rb'
 
 class CheckErrors < IndexCode
-  def error_storage
+  def initialize(path)
+    super
+    create_error_storage_hash
+    check_for_errors
+  end
+
+  def create_error_storage_hash
     @errors = {}
     count_lines.times do |i|
       @errors[i] = []
