@@ -3,8 +3,11 @@ require_relative './../lib/check_errors.rb'
 
 path1 = '../lib/student_code1.rb'
 path2 = '../lib/student_code2.rb'
+path3 = '../lib/student_code3.rb'
+
 student_code1 = CheckErrors.new(path1)
 student_code2 = CheckErrors.new(path2)
+student_code3 = CheckErrors.new(path3)
 
 def show_errors(instance_name)
   puts "\n------RESULTS:"
@@ -22,6 +25,7 @@ end
 
 show_errors(student_code1)
 show_errors(student_code2)
+show_errors(student_code3)
 
 # print "ALL UNITS #{student_code.all_units}"
 # print "INDEX ALL UNITS #{student_code.index_all_units}"

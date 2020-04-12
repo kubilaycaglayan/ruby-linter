@@ -10,7 +10,9 @@ class Wonderful
       @variable  = num})
  end
 
-def as
+def  def to_s
+   @message_file
+ end as
    "asdas"
  end
 

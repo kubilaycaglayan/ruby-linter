@@ -3,7 +3,12 @@ class ReadFile
   def initialize(path)
     @path = path
     @file_name = path.match(%r{/\w*\.rb}).to_s[1..-1]
-    @read_by_lines = File.readlines(@path)
+    begin
+      @read_by_lines = File.readlines(@path)
+    rescue => exception
+      @read_by_lines = []
+      @message_file = "File couldn't read.\n" + exception.to_s
+    end
   end
 
   private

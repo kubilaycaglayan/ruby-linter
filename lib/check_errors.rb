@@ -9,13 +9,22 @@ class CheckErrors < IndexCode
   end
 
   def to_s
-    error_message = @error_counter.zero? ? "No errors detected.\n" : "Errors (#{@error_counter}) detected.\n"
-    "\nPath: #{@path}\n" \
-      "File: \"#{@file_name}\" has #{count_lines} lines.\n" +
-      error_message
+    create_file_message
   end
 
   private
+
+  def create_file_message
+    if @message_file.nil?
+      error_message = @error_counter.zero? ? "No errors detected.\n" : "Errors (#{@error_counter}) detected.\n"
+      "\nPath: #{@path}\n" \
+        "File: \"#{@file_name}\" has #{count_lines} lines.\n" +
+        error_message
+    else
+      "\nPath: #{@path}\n" +
+       @message_file
+    end
+  end
 
   def check_for_errors
     indentation_error
@@ -157,7 +166,7 @@ class CheckErrors < IndexCode
   end
 
   def end_error
-    case special_w_count_excluding_end <=> special_w_count[:endd]
+    case special_w_count_excluding_end <=> @special_w_count[:endd]
     when 1
       end_missing_error
     when -1

@@ -3,8 +3,8 @@ require 'strscan'
 
 # rubocop:disable Metrics/ClassLength
 class IndexCode < ReadFile
-  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units, :index_all_units, :indentation_orders
-  def initialize(path)
+  attr_accessor :errors
+    def initialize(path)
     super
     create_hashes
     scan_all_lines
@@ -192,16 +192,16 @@ class IndexCode < ReadFile
   end
 
   def spaces_in_the_text
-    index_all_units.select do |key, _value|
+    @index_all_units.select do |key, _value|
       key.match(/ {2,10}/)
     end
   end
 
   def word_occuring_lines(word)
-    if index_all_units[word].nil?
+    if @index_all_units[word].nil?
       []
     else
-      index_all_units[word].map do |array|
+      @index_all_units[word].map do |array|
         array[0]
       end
     end
@@ -214,7 +214,7 @@ class IndexCode < ReadFile
   end
 
   def special_w_count_excluding_end
-    @special_w_count.values.sum - special_w_count[:endd]
+    @special_w_count.values.sum - @special_w_count[:endd]
   end
 end
 # rubocop:enable Metrics/ClassLength
