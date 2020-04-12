@@ -5,6 +5,7 @@ AllCops:
     - 'Rakefile'
     - 'test.rb'
     - 'lib/student_codes/*'
+    - lib/student_codes/*
 
   DisplayCopNames: true
 
