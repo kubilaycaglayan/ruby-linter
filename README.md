@@ -6,7 +6,7 @@ In this capstone project I made a linter for Ruby. It can detect basic syntax er
 ## It can detect:
 
 This linter is susceptible to following keywords: **def**, **class**, **module**, **if**, **end**.
-Usage this linter out of this context is not approved.
+Using this linter out of the context is not approved.
 
 ### Indentation Cop 
 Detects indentation with the rules of two spaces indentation.
@@ -89,8 +89,8 @@ end
 ```
 
 ### New Line Cop
-It scans the keywords given above and makes an order of indentation. 
-Returns the line number if this order is not satisfied.
+If there is a keyword immediately before the 'end' keyword it returns an error message.
+
 #### \# good
 ```
 def my_method(arg1, arg2)
