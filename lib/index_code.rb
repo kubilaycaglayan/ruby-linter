@@ -4,12 +4,14 @@ require 'strscan'
 # rubocop:disable Metrics/ClassLength
 class IndexCode < ReadFile
   attr_accessor :errors
-    def initialize(path)
+  def initialize(path)
     super
     create_hashes
     scan_all_lines
     calculate
   end
+
+  private
 
   def scan_line(line, index)
     scn = StringScanner.new(line)
@@ -181,14 +183,6 @@ class IndexCode < ReadFile
 
   def last_appearing(unit)
     @index_all_units[unit].last
-  end
-
-  def indentation?(unit, value)
-    if unit.zero? && value.match(/ +/)
-      true
-    else
-      false
-    end
   end
 
   def spaces_in_the_text

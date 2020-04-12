@@ -5,9 +5,9 @@ class ReadFile
     @file_name = path.match(%r{/\w*\.rb}).to_s[1..-1]
     begin
       @read_by_lines = File.readlines(@path)
-    rescue => exception
+    rescue StandardError => e
       @read_by_lines = []
-      @message_file = "File couldn't read.\n" + exception.to_s
+      @message_file = "File couldn't read.\n" + e.to_s
     end
   end
 
