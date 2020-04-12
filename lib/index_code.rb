@@ -11,6 +11,8 @@ class IndexCode < ReadFile
     calculate
   end
 
+  private
+  
   def scan_line(line, index)
     scn = StringScanner.new(line)
     until scn.eos?

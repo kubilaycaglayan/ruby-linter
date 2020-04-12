@@ -7,6 +7,15 @@ class CheckErrors < IndexCode
     check_for_errors
   end
 
+  private
+
+  def check_for_errors
+    indentation_error
+    paranthese_error
+    square_error
+    curly_error
+  end
+
   def create_error_storage_hash
     @errors = {}
     count_lines.times do |i|
@@ -22,7 +31,7 @@ class CheckErrors < IndexCode
     @errors[line] << 'Indentation Error'
   end
 
-  def check_for_errors
+  def indentation_error
     @all_units.each do |line, value|
       @all_units[line].size.times do |i|
         word = value[i][0]
@@ -35,9 +44,11 @@ class CheckErrors < IndexCode
 
   def paranthese_check
     if @count_match_units[:open_paranthese] < @count_match_units[:close_paranthese]
-      'Open paranthese expected.'
+      1
     elsif @count_match_units[:open_paranthese] > @count_match_units[:close_paranthese]
-      'Closing paranthese expected.'
+      2
+    else
+      0
     end
   end
 
@@ -54,6 +65,33 @@ class CheckErrors < IndexCode
       'Open curly expected.'
     elsif @count_match_units[:open_curly] > @count_match_units[:close_curly]
       'Closing curly expected.'
+    end
+  end
+
+  def paranthese_error
+    case paranthese_check
+    when 1
+      @errors[last_appearing(')')[0]] << 'Opening paranthese missing'
+    when 2
+      @errors[last_appearing('(')[0]] << 'Closing paranthese missing'
+    end
+  end
+
+  def square_error
+    case paranthese_check
+    when 1
+      @errors[last_appearing(']')[0]] << 'Opening square bracket missing'
+    when 2
+      @errors[last_appearing('[')[0]] << 'Closing square bracket missing'
+    end
+  end
+
+  def curly_error
+    case paranthese_check
+    when 1
+      @errors[last_appearing('}')[0]] << 'Opening curly bracket missing'
+    when 2
+      @errors[last_appearing('{')[0]] << 'Closing curly bracket missing'
     end
   end
 end

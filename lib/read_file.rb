@@ -11,6 +11,8 @@ class ReadFile
       "File: \"#{@file_name}\" has #{count_lines} lines."
   end
 
+  private
+
   def count_lines
     @read_by_lines.size
   end
