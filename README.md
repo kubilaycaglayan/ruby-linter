@@ -1,6 +1,6 @@
 [![hire-badge](https://img.shields.io/badge/Consult%20/%20Hire%20Kubilay-Click%20to%20Contact-brightgreen)](mailto:kblycaglayan@gmail.com) [![Twitter Follow](https://img.shields.io/twitter/follow/kbcaglayan?label=Follow%20Kubilay%20on%20Twitter&style=social)](https://twitter.com/kbcaglayan)
 
-# Ruby-Capstone-Project-build-your-own-linter
+# Ruby Capstone Project Build Your Own Linter
 In this capstone project I made a linter for Ruby. It can detect basic syntax errors on targeted files according to ruby syntax rules.
 
 ## It can detect:
