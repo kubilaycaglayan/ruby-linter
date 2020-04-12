@@ -12,7 +12,7 @@ class IndexCode < ReadFile
   end
 
   private
-  
+
   def scan_line(line, index)
     scn = StringScanner.new(line)
     until scn.eos?
@@ -181,6 +181,12 @@ class IndexCode < ReadFile
       true
     else
       false
+    end
+  end
+
+  def spaces_in_the_text
+    index_all_units.select  do |key, _value|
+      key.match(/ {2,10}/)
     end
   end
 end

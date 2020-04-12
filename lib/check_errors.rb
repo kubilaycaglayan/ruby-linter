@@ -14,6 +14,7 @@ class CheckErrors < IndexCode
     paranthese_error
     square_error
     curly_error
+    extra_space_error
   end
 
   def create_error_storage_hash
@@ -92,6 +93,24 @@ class CheckErrors < IndexCode
       @errors[last_appearing('}')[0]] << 'Opening curly bracket missing'
     when 2
       @errors[last_appearing('{')[0]] << 'Closing curly bracket missing'
+    end
+  end
+
+  def wrong_spaces
+    spaces_in_the_text.select do |_key, value|
+      condition = false
+      value.each do |_first, second|
+        condition = true unless second.zero?
+      end
+      condition
+    end
+  end
+
+  def extra_space_error
+    wrong_spaces.each do |key, value|
+      value.each do |line, unit|
+        @errors[line] << 'Extra spacing detected.'
+      end
     end
   end
 end

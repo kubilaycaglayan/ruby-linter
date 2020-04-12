@@ -11,6 +11,9 @@ student_code = CheckErrors.new(path)
 student_code.errors.each do |key, value|
   puts "#{key + 1}. LINE #{value}"
 end
+
+
+
 # print "ALL UNITS #{student_code.all_units}"
 # print "INDEX ALL UNITS #{student_code.index_all_units}"
 # puts student_code
