@@ -1,18 +1,27 @@
 #!/usr/bin/env ruby
 require_relative './../lib/check_errors.rb'
 
-path = '../lib/student_code.txt'
-student_code = CheckErrors.new(path)
+path1 = '../lib/student_code1.rb'
+path2 = '../lib/student_code2.rb'
+student_code1 = CheckErrors.new(path1)
+student_code2 = CheckErrors.new(path2)
 
-# print "COUNT MATCH UNITS #{student_code.count_match_units}"
-# print "SPECIAL WORD COUNT #{student_code.special_w_count}"
-# print "LINE #{student_code.line_orders}"
+def show_errors(instance_name)
+  puts "\n------RESULTS:"
+  puts instance_name
+  instance_name.errors.each do |key, value|
+    next if value.empty?
 
-student_code.errors.each do |key, value|
-  puts "#{key + 1}. LINE #{value}"
+    print "#{key}. LINE: "
+    value.each do |error|
+      print error + ', '
+    end
+    puts
+  end
 end
 
-
+show_errors(student_code1)
+show_errors(student_code2)
 
 # print "ALL UNITS #{student_code.all_units}"
 # print "INDEX ALL UNITS #{student_code.index_all_units}"

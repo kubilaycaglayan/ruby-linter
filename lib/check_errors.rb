@@ -2,9 +2,17 @@ require_relative 'index_code.rb'
 
 class CheckErrors < IndexCode
   def initialize(path)
+    @error_counter = 0
     super
     create_error_storage_hash
     check_for_errors
+  end
+
+  def to_s
+    error_message = @error_counter.zero? ? "No errors detected.\n" : "Errors (#{@error_counter}) detected.\n"
+    "\nPath: #{@path}\n" \
+      "File: \"#{@file_name}\" has #{count_lines} lines.\n" +
+      error_message
   end
 
   private
@@ -15,6 +23,13 @@ class CheckErrors < IndexCode
     square_error
     curly_error
     extra_space_error
+    new_line_error
+    end_error
+  end
+
+  def record_error(line, error_message)
+    @errors[line] << error_message
+    @error_counter += 1
   end
 
   def create_error_storage_hash
@@ -29,7 +44,7 @@ class CheckErrors < IndexCode
   end
 
   def record_indentation_error(line)
-    @errors[line] << 'Indentation Error'
+    record_error(line, 'Indentation Error')
   end
 
   def indentation_error
@@ -72,27 +87,27 @@ class CheckErrors < IndexCode
   def paranthese_error
     case paranthese_check
     when 1
-      @errors[last_appearing(')')[0]] << 'Opening paranthese missing'
+      record_error(last_appearing(')')[0], 'Opening paranthese missing')
     when 2
-      @errors[last_appearing('(')[0]] << 'Closing paranthese missing'
+      record_error(last_appearing('(')[0], 'Closing paranthese missing')
     end
   end
 
   def square_error
     case paranthese_check
     when 1
-      @errors[last_appearing(']')[0]] << 'Opening square bracket missing'
+      record_error(last_appearing(']')[0], 'Opening square bracket missing')
     when 2
-      @errors[last_appearing('[')[0]] << 'Closing square bracket missing'
+      record_error(last_appearing('[')[0], 'Closing square bracket missing')
     end
   end
 
   def curly_error
     case paranthese_check
     when 1
-      @errors[last_appearing('}')[0]] << 'Opening curly bracket missing'
+      record_error(last_appearing('}')[0], 'Opening curly bracket missing')
     when 2
-      @errors[last_appearing('{')[0]] << 'Closing curly bracket missing'
+      record_error(last_appearing('{')[0], 'Closing curly bracket missing')
     end
   end
 
@@ -107,10 +122,46 @@ class CheckErrors < IndexCode
   end
 
   def extra_space_error
-    wrong_spaces.each do |key, value|
-      value.each do |line, unit|
-        @errors[line] << 'Extra spacing detected.'
+    wrong_spaces.each do |_key, value|
+      value.each do |line, _unit|
+        record_error(line, 'Extra spacing detected.')
       end
+    end
+  end
+
+  def special_word_occurings
+    word_occuring_lines('def') + word_occuring_lines('class') +
+      word_occuring_lines('if') + word_occuring_lines('module')
+  end
+
+  def new_line_check
+    (after_end - special_word_occurings).size == after_end.size
+  end
+
+  def new_line_error
+    unless new_line_check
+      expected_newlines = after_end - (after_end - special_word_occurings)
+      expected_newlines.each do |line|
+        record_error(line, 'Expected newline.')
+      end
+    end
+  end
+
+  def end_missing_error
+    line = last_appearing('end').nil? ? count_lines : last_appearing('end')
+    record_error(line[0], "Expected \'end\' or redundant keyword.")
+  end
+
+  def end_too_much_error
+    record_error(last_appearing('end')[0], "Redundant \'end\' or missing keywords.")
+  end
+
+  def end_error
+    case special_w_count_excluding_end <=> special_w_count[:endd]
+    when 1
+      end_missing_error
+    when -1
+      end_too_much_error
     end
   end
 end

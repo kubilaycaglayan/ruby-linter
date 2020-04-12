@@ -3,15 +3,13 @@ require 'strscan'
 
 # rubocop:disable Metrics/ClassLength
 class IndexCode < ReadFile
-  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units, :index_all_units
+  attr_accessor :count_match_units, :special_w_count, :line_orders, :errors, :all_units, :index_all_units, :indentation_orders
   def initialize(path)
     super
     create_hashes
     scan_all_lines
     calculate
   end
-
-  private
 
   def scan_line(line, index)
     scn = StringScanner.new(line)
@@ -46,6 +44,7 @@ class IndexCode < ReadFile
     calculate_match_units
     calculate_special_word
     calculate_line_order
+    create_indentation_order_array
   end
 
   def create_match_units_hash
@@ -80,7 +79,8 @@ class IndexCode < ReadFile
       method: 'def',
       classs: 'class',
       modules: 'module',
-      endd: 'end'
+      endd: 'end',
+      iff: 'if'
     }
     @keys_special_words = @special_words.each_key.to_a
     @values_special_words = @special_words.each_value.to_a
@@ -128,7 +128,7 @@ class IndexCode < ReadFile
     word == 'end' ? decrease_line_order(line) : increase_line_order(line)
   end
 
-  def calculate_line_order()
+  def calculate_line_order
     @all_units.each do |key, value|
       @all_units[key].size.times do |i|
         word = value[i][0]
@@ -144,6 +144,13 @@ class IndexCode < ReadFile
       sum + key_value[1]
     end
     result
+  end
+
+  def create_indentation_order_array
+    @indentation_orders = {}
+    count_lines.times do |line|
+      @indentation_orders[line] = calculate_indentation_order(line)
+    end
   end
 
   def create_all_units_hash
@@ -185,9 +192,29 @@ class IndexCode < ReadFile
   end
 
   def spaces_in_the_text
-    index_all_units.select  do |key, _value|
+    index_all_units.select do |key, _value|
       key.match(/ {2,10}/)
     end
+  end
+
+  def word_occuring_lines(word)
+    if index_all_units[word].nil?
+      []
+    else
+      index_all_units[word].map do |array|
+        array[0]
+      end
+    end
+  end
+
+  def after_end
+    word_occuring_lines('end').map do |line|
+      line + 1
+    end
+  end
+
+  def special_w_count_excluding_end
+    @special_w_count.values.sum - special_w_count[:endd]
   end
 end
 # rubocop:enable Metrics/ClassLength

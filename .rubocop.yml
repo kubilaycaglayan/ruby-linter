@@ -4,8 +4,10 @@ AllCops:
     - 'Guardfile'
     - 'Rakefile'
     - 'test.rb'
-    - './lib/student_code.rb'
-    - 'student_code.rb'
+    - 'lib/student_code1.rb'
+    - 'lib/student_code2.rb'
+    - 'lib/student_code3.rb'
+    - 'lib/student_code4.rb'
 
   DisplayCopNames: true
 

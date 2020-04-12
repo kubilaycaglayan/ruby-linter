@@ -6,11 +6,6 @@ class ReadFile
     @read_by_lines = File.readlines(@path)
   end
 
-  def to_s
-    "\nPath: #{@path}\n" \
-      "File: \"#{@file_name}\" has #{count_lines} lines."
-  end
-
   private
 
   def count_lines
