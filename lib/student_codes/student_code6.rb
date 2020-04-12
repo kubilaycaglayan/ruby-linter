@@ -1,3 +1,4 @@
+# rubocop:disable all
 class myClass
   attr_accessor :name
  def my_method(arg1,  arg2)}
