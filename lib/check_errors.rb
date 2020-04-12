@@ -76,27 +76,27 @@ class CheckErrors < IndexCode
   def paranthese_error
     case paranthese_check
     when -1
-      record_error(last_appearing(')')[0], 'Opening paranthese missing')
+      record_error(last_appearing(')')[0], 'Opening parantheses missing')
     when 1
-      record_error(last_appearing('(')[0], 'Closing paranthese missing')
+      record_error(last_appearing('(')[0], 'Closing parantheses missing')
     end
   end
 
   def square_error
     case square_check
     when -1
-      record_error(last_appearing(']')[0], 'Opening square bracket missing')
+      record_error(last_appearing(']')[0], 'Opening square brackets missing')
     when 1
-      record_error(last_appearing('[')[0], 'Closing square bracket missing')
+      record_error(last_appearing('[')[0], 'Closing square brackets missing')
     end
   end
 
   def curly_error
     case curly_check
     when -1
-      record_error(last_appearing('}')[0], 'Opening curly bracket missing')
+      record_error(last_appearing('}')[0], 'Opening curly brackets missing')
     when 1
-      record_error(last_appearing('{')[0], 'Closing curly bracket missing')
+      record_error(last_appearing('{')[0], 'Closing curly brackets missing')
     end
   end
 
@@ -112,7 +112,7 @@ class CheckErrors < IndexCode
 
   def extra_space_error
     wrong_spaces.each do |line|
-      record_error(line, 'Extra spacing detected.')
+      record_error(line, 'Extra spacing detected')
     end
   end
 
@@ -132,17 +132,17 @@ class CheckErrors < IndexCode
   def new_line_error_part
     expected_newlines = after_end - (after_end - special_word_occurings)
     expected_newlines.each do |line|
-      record_error(line, 'Expected newline.')
+      record_error(line, 'Expected newline')
     end
   end
 
   def end_missing_error
     line = last_appearing('end').nil? ? count_lines : last_appearing('end')
-    record_error(line[0], "Expected \'end\' or redundant keyword.")
+    record_error(line[0], "Expected \'end\' or redundant keyword")
   end
 
   def end_too_much_error
-    record_error(last_appearing('end')[0], "Redundant \'end\' or missing keywords.")
+    record_error(last_appearing('end')[0], "Redundant \'end\' or missing keywords")
   end
 
   def end_error
