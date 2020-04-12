@@ -3,7 +3,6 @@ require 'strscan'
 
 # rubocop:disable Metrics/ClassLength
 class IndexCode < ReadFile
-  attr_accessor :errors
   def initialize(path)
     super
     create_hashes
