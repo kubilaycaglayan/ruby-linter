@@ -1,7 +1,7 @@
 require_relative 'index_code.rb'
 
 class CheckErrors < IndexCode
-  attr_accessor :error_counter, :errors
+  attr_reader :error_counter, :errors
   def initialize(path)
     @error_counter = 0
     super
