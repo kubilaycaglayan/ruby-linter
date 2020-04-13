@@ -20,32 +20,37 @@ def show_errors(instance_name)
   puts "\n"
 end
 
-def paths
+def file_names_in_student_codes_file
   int = $PROGRAM_NAME[0..-8]
-  ['', int + '../lib/student_codes/student_code1.rb',
-   int + '../lib/student_codes/student_code2.rb',
-   int + '../lib/student_codes/student_code3.rb',
-   int + '../lib/student_codes/student_code4.rb',
-   int + '../lib/student_codes/student_code5.rb',
-   int + '../lib/student_codes/student_code6.rb']
+  path_students_code = int + "../lib/student_codes/*"
+  files_in_students_code = Dir[path_students_code]
+  file_names = files_in_students_code.map do |file_path|
+    file_path.reverse.split("\/")[0].reverse
+  end
+  file_names
 end
 
+def paths
+  int = $PROGRAM_NAME[0..-8]
+  student_codes_path = int + '../lib/student_codes/'
+  file_paths_in_student_codes = file_names_in_student_codes_file.map do |file_names|
+    student_codes_path + file_names
+  end
+  file_paths_in_student_codes
+end
+
+p paths
+
 def instances
-  ['', CheckErrors.new(paths[1]),
-   CheckErrors.new(paths[2]),
-   CheckErrors.new(paths[3]),
-   CheckErrors.new(paths[4]),
-   CheckErrors.new(paths[5]),
-   CheckErrors.new(paths[6])]
+  paths.map do |file_path|
+    CheckErrors.new(file_path)
+  end
 end
 
 def show
-  show_errors(instances[1])
-  show_errors(instances[2])
-  show_errors(instances[3])
-  show_errors(instances[4])
-  show_errors(instances[5])
-  show_errors(instances[6])
+  instances.map do |instance|
+    show_errors(instance)
+  end
 end
 
 if ARGV.empty?
@@ -55,3 +60,4 @@ else
   new_check = CheckErrors.new(given_path)
   show_errors(new_check)
 end
+
