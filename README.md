@@ -144,6 +144,7 @@ def my_method(arg1, arg2)
 ### Usage
 
 - Fork/Clone this project to your local machine
+- Please type ``bundle install`` first. To install dependencies.
 - Open main.rb in your local enviroment
 - Or you can basically type ``main.rb file/path/you/want/to/check.rb `` on command line.
 
