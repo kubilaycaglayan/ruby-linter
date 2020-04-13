@@ -21,12 +21,13 @@ def show_errors(instance_name)
 end
 
 def paths
-  ['', '../lib/student_codes/student_code1.rb',
-   '../lib/student_codes/student_code2.rb',
-   '../lib/student_codes/student_code3.rb',
-   '../lib/student_codes/student_code4.rb',
-   '../lib/student_codes/student_code5.rb',
-   '../lib/student_codes/student_code6.rb']
+  int = $PROGRAM_NAME[0..-8]
+  ['', int + '../lib/student_codes/student_code1.rb',
+   int + '../lib/student_codes/student_code2.rb',
+   int + '../lib/student_codes/student_code3.rb',
+   int + '../lib/student_codes/student_code4.rb',
+   int + '../lib/student_codes/student_code5.rb',
+   int + '../lib/student_codes/student_code6.rb']
 end
 
 def instances
