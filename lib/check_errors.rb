@@ -17,7 +17,8 @@ class CheckErrors < IndexCode
 
   def create_file_message
     if @message_file.nil?
-      error_message = @error_counter.zero? ? "No errors detected.\n" : "Errors (#{@error_counter}) detected.\n"
+      there = "Errors (#{@error_counter}) detected.\n".colorize(:red)
+      error_message = @error_counter.zero? ? "No errors detected.\n".colorize(:green) : there
       "\nPath: #{@path}\n" \
         "File: \"#{@file_name}\" has #{count_lines} lines.\n" +
         error_message

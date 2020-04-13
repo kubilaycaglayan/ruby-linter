@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 require_relative './../lib/check_errors.rb'
+require 'colorize'
 
 def show_errors(instance_name)
-  puts "\n____ERROR CHECKING RESULTS:____"
+  puts "\n____ERROR CHECKING RESULTS:____".colorize(:blue)
   puts instance_name
-  puts "\nDETAILS:\n" if instance_name.error_counter.positive?
+  puts "\nDETAILS:\n".colorize(:blue) if instance_name.error_counter.positive?
   instance_name.errors.each do |key, value|
     next if value.empty?
 
@@ -13,7 +14,7 @@ def show_errors(instance_name)
     value.each do |error|
       count += 1
       comma = count < value.size ? ", \n" : ''
-      print '        *' + error + comma
+      print '        *' + error.colorize(:red) + comma
     end
     puts
   end
@@ -22,7 +23,7 @@ end
 
 def file_names_in_student_codes_file
   int = $PROGRAM_NAME[0..-8]
-  path_students_code = int + "../lib/student_codes/*"
+  path_students_code = int + '../lib/student_codes/*'
   files_in_students_code = Dir[path_students_code]
   file_names = files_in_students_code.map do |file_path|
     file_path.reverse.split("\/")[0].reverse
@@ -38,8 +39,6 @@ def paths
   end
   file_paths_in_student_codes
 end
-
-p paths
 
 def instances
   paths.map do |file_path|
@@ -60,4 +59,3 @@ else
   new_check = CheckErrors.new(given_path)
   show_errors(new_check)
 end
-
